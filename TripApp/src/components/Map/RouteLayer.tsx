@@ -7,9 +7,10 @@ const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving'
 interface Props {
   from: Participant
   to: Destination
+  color: string
 }
 
-export default function RouteLayer({ from, to }: Props) {
+export default function RouteLayer({ from, to, color }: Props) {
   const [coords, setCoords] = useState<[number, number][]>([])
 
   useEffect(() => {
@@ -27,5 +28,5 @@ export default function RouteLayer({ from, to }: Props) {
       .catch(() => {})
   }, [from.lat, from.lng, to.lat, to.lng])
 
-  return coords.length > 0 ? <Polyline positions={coords} color="blue" weight={3} opacity={0.6} /> : null
+  return coords.length > 0 ? <Polyline positions={coords} color={color} weight={3} opacity={0.6} /> : null
 }
