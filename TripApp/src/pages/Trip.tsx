@@ -65,8 +65,10 @@ export default function Trip() {
         )}
       </header>
 
-      <div className="flex-1 relative">
-        <TripMap participants={trip?.participants} destination={trip?.destination} />
+      <div className="flex-1 p-3 bg-gray-100">
+        <div className="h-full rounded-xl overflow-hidden shadow-sm">
+          <TripMap participants={trip?.participants} destination={trip?.destination} />
+        </div>
       </div>
 
       <ETAPanel participants={trip?.participants} destination={trip?.destination} />
