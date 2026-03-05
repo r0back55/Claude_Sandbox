@@ -8,7 +8,7 @@ import TripMap from '../components/Map/TripMap'
 import ETAPanel from '../components/Trip/ETAPanel'
 import NotificationToast from '../components/Notifications/NotificationToast'
 import { db } from '../services/firebase'
-import { ref, set } from 'firebase/database'
+import { ref, set, remove } from 'firebase/database'
 import type { Notification } from '../types'
 
 export default function Trip() {
@@ -32,6 +32,12 @@ export default function Trip() {
     navigate('/')
   }
 
+  const exitTrip = async (): Promise<void> => {
+    if (!tripId || !identity) return
+    await remove(ref(db, `trips/${tripId}/participants/${identity.uid}`))
+    navigate('/')
+  }
+
   const dismissNotification = (id: number): void =>
     setNotifications((prev) => prev.filter((n) => n.id !== id))
 
@@ -42,12 +48,19 @@ export default function Trip() {
           <h1 className="font-bold text-gray-900">TripApp</h1>
           <p className="text-xs text-gray-500">To: {trip?.destination?.name}</p>
         </div>
-        {identity?.isOrganizer && (
+        {identity?.isOrganizer ? (
           <button
             onClick={endTrip}
             className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
             End Trip
+          </button>
+        ) : (
+          <button
+            onClick={exitTrip}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            Exit Trip
           </button>
         )}
       </header>
