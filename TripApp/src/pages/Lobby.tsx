@@ -8,19 +8,18 @@ import { db } from '../services/firebase'
 import { ref, set } from 'firebase/database'
 
 export default function Lobby() {
-  const { tripId } = useParams()
+  const { tripId } = useParams<{ tripId: string }>()
   const navigate = useNavigate()
-  const trip = useTrip(tripId)
+  const trip = useTrip(tripId ?? null)
   const { identity } = useAuth()
 
-  useLocation(tripId, identity?.uid, identity?.name)
+  useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
 
-  // Organizer can start the trip
-  const startTrip = async () => {
+  const startTrip = async (): Promise<void> => {
+    if (!tripId) return
     await set(ref(db, `trips/${tripId}/status`), 'active')
   }
 
-  // Redirect all users when trip goes active
   useEffect(() => {
     if (trip?.status === 'active') {
       navigate(`/trip/${tripId}`)

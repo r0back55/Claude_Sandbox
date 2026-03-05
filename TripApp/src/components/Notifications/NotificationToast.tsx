@@ -1,6 +1,11 @@
 import { useEffect } from 'react'
 
-export default function NotificationToast({ message, onDismiss }) {
+interface Props {
+  message: string
+  onDismiss: () => void
+}
+
+export default function NotificationToast({ message, onDismiss }: Props) {
   useEffect(() => {
     const timer = setTimeout(onDismiss, 5000)
     return () => clearTimeout(timer)
@@ -18,7 +23,12 @@ export default function NotificationToast({ message, onDismiss }) {
       zIndex: 9999,
     }}>
       {message}
-      <button onClick={onDismiss} style={{ marginLeft: '1rem', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>x</button>
+      <button
+        onClick={onDismiss}
+        style={{ marginLeft: '1rem', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+      >
+        x
+      </button>
     </div>
   )
 }

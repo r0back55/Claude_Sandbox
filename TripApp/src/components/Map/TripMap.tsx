@@ -1,15 +1,22 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import UserMarker from './UserMarker'
 import RouteLayer from './RouteLayer'
+import type { Participant, Destination } from '../../types'
 import 'leaflet/dist/leaflet.css'
 
-const DEFAULT_CENTER = [52.237049, 21.017532] // Warsaw fallback
+const DEFAULT_CENTER: [number, number] = [52.237049, 21.017532] // Warsaw fallback
 
-export default function TripMap({ participants, destination }) {
-  const participantList = Object.entries(participants || {})
-  const center = participantList.length > 0
-    ? [participantList[0][1].lat, participantList[0][1].lng]
-    : DEFAULT_CENTER
+interface Props {
+  participants?: Record<string, Participant>
+  destination?: Destination
+}
+
+export default function TripMap({ participants, destination }: Props) {
+  const participantList = Object.entries(participants ?? {})
+  const center: [number, number] =
+    participantList.length > 0
+      ? [participantList[0][1].lat, participantList[0][1].lng]
+      : DEFAULT_CENTER
 
   return (
     <MapContainer center={center} zoom={10} style={{ height: '60vh', width: '100%' }}>

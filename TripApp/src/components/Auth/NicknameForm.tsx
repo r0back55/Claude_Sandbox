@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
@@ -8,10 +8,10 @@ export default function NicknameForm() {
   const { loginAsGuest } = useAuth()
   const navigate = useNavigate()
 
-  const handle = (e) => {
+  const handle = async (e: FormEvent): Promise<void> => {
     e.preventDefault()
     if (!name.trim() || !code.trim()) return
-    loginAsGuest(name.trim())
+    await loginAsGuest(name.trim())
     navigate(`/lobby/${code.trim().toUpperCase()}`)
   }
 

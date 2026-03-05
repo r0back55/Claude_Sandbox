@@ -1,19 +1,26 @@
 import { useEffect, useState } from 'react'
 import { Polyline } from 'react-leaflet'
+import type { Destination, Participant } from '../../types'
 
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving'
 
-export default function RouteLayer({ from, to }) {
-  const [coords, setCoords] = useState([])
+interface Props {
+  from: Participant
+  to: Destination
+}
+
+export default function RouteLayer({ from, to }: Props) {
+  const [coords, setCoords] = useState<[number, number][]>([])
 
   useEffect(() => {
-    if (!from || !to) return
     const url = `${OSRM_BASE}/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
         if (data.routes?.[0]) {
-          const points = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng])
+          const points: [number, number][] = data.routes[0].geometry.coordinates.map(
+            ([lng, lat]: [number, number]) => [lat, lng]
+          )
           setCoords(points)
         }
       })

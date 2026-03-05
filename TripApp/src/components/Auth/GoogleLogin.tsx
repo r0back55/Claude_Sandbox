@@ -1,9 +1,13 @@
 import { useAuth } from '../../context/AuthContext'
 
-export default function GoogleLogin({ onSuccess }) {
+interface Props {
+  onSuccess?: () => void
+}
+
+export default function GoogleLogin({ onSuccess }: Props) {
   const { loginWithGoogle } = useAuth()
 
-  const handle = async () => {
+  const handle = async (): Promise<void> => {
     try {
       await loginWithGoogle()
       onSuccess?.()

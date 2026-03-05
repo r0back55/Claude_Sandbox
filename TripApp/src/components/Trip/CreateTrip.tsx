@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { db } from '../../services/firebase'
 import { ref, set } from 'firebase/database'
 
-function generateTripId() {
+function generateTripId(): string {
   return Math.random().toString(36).substring(2, 8).toUpperCase()
 }
 
@@ -15,10 +15,10 @@ export default function CreateTrip() {
   const { identity } = useAuth()
   const navigate = useNavigate()
 
-  const create = async (e) => {
+  const create = async (e: FormEvent): Promise<void> => {
     e.preventDefault()
+    if (!identity) return
     const tripId = generateTripId()
-    // Write each field separately to satisfy granular security rules
     await set(ref(db, `trips/${tripId}/organizerId`), identity.uid)
     await set(ref(db, `trips/${tripId}/status`), 'lobby')
     await set(ref(db, `trips/${tripId}/destination`), {

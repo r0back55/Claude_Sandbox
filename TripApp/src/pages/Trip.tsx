@@ -9,36 +9,35 @@ import ETAPanel from '../components/Trip/ETAPanel'
 import NotificationToast from '../components/Notifications/NotificationToast'
 import { db } from '../services/firebase'
 import { ref, set } from 'firebase/database'
+import type { Notification } from '../types'
 
 export default function Trip() {
-  const { tripId } = useParams()
+  const { tripId } = useParams<{ tripId: string }>()
   const navigate = useNavigate()
-  const trip = useTrip(tripId)
+  const trip = useTrip(tripId ?? null)
   const { identity } = useAuth()
-  const [notifications, setNotifications] = useState([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
-  useLocation(tripId, identity?.uid, identity?.name)
+  useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
 
-  const onNotify = useCallback((message) => {
+  const onNotify = useCallback((message: string): void => {
     setNotifications((prev) => [...prev, { id: Date.now(), message }])
   }, [])
 
   useNotifications(trip?.participants, trip?.destination, onNotify)
 
-  const endTrip = async () => {
+  const endTrip = async (): Promise<void> => {
+    if (!tripId) return
     await set(ref(db, `trips/${tripId}/status`), 'ended')
     navigate('/')
   }
 
-  const dismissNotification = (id) =>
+  const dismissNotification = (id: number): void =>
     setNotifications((prev) => prev.filter((n) => n.id !== id))
 
   return (
     <div>
-      <TripMap
-        participants={trip?.participants}
-        destination={trip?.destination}
-      />
+      <TripMap participants={trip?.participants} destination={trip?.destination} />
       <ETAPanel participants={trip?.participants} destination={trip?.destination} />
       {notifications.map((n) => (
         <NotificationToast key={n.id} message={n.message} onDismiss={() => dismissNotification(n.id)} />
