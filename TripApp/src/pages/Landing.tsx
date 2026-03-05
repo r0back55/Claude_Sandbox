@@ -6,7 +6,7 @@ export default function Landing() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <h1 className="text-5xl font-bold text-white mb-2">TripApp</h1>

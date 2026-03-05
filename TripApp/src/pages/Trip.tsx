@@ -36,7 +36,7 @@ export default function Trip() {
     setNotifications((prev) => prev.filter((n) => n.id !== id))
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[100dvh]">
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
         <div>
           <h1 className="font-bold text-gray-900">TripApp</h1>

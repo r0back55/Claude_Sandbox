@@ -27,7 +27,7 @@ export default function Lobby() {
   }, [trip?.status, tripId, navigate])
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md flex flex-col gap-5">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">Waiting for trip to start...</h1>
