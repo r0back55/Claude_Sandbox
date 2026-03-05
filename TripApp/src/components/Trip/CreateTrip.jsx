@@ -18,14 +18,13 @@ export default function CreateTrip() {
   const create = async (e) => {
     e.preventDefault()
     const tripId = generateTripId()
-    await set(ref(db, `trips/${tripId}`), {
-      status: 'lobby',
-      organizerId: identity.uid,
-      destination: {
-        lat: parseFloat(destLat),
-        lng: parseFloat(destLng),
-        name: destName,
-      },
+    // Write each field separately to satisfy granular security rules
+    await set(ref(db, `trips/${tripId}/organizerId`), identity.uid)
+    await set(ref(db, `trips/${tripId}/status`), 'lobby')
+    await set(ref(db, `trips/${tripId}/destination`), {
+      lat: parseFloat(destLat),
+      lng: parseFloat(destLng),
+      name: destName,
     })
     navigate(`/lobby/${tripId}`)
   }
