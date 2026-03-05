@@ -11,13 +11,14 @@ A real-time group travel tracking web app. Set a shared destination, share a tri
 - **Google login** for trip organizers
 - **Nickname-based joining** — participants join with a code, no account needed
 - **Live location sharing** — updates every minute via browser geolocation
-- **Interactive map** — each participant shown as a marker with their name
-- **Route overlay** — remaining path to destination drawn for each participant
-- **ETA panel** — estimated time and distance to destination for everyone
+- **Interactive map** — each participant shown as a unique colored marker with initials
+- **Route overlay** — remaining path to destination drawn per participant in matching color
+- **ETA panel** — collapsible, shows estimated time and distance per participant, with arrived indicator
 - **Smart notifications** — alerts when someone arrives, stops moving, or joins
 - **Organizer controls** — start trip, end trip for all participants
 - **Participant controls** — exit trip independently
-- **Mobile ready** — responsive design, works on iOS and Android browsers
+- **Copy trip code** — one-tap copy button in the lobby
+- **Mobile ready** — responsive design, works on iOS and Android browsers (HTTPS required for geolocation)
 
 ---
 
@@ -177,7 +178,6 @@ src/
 - [ ] Map click to set destination
 - [ ] Push notifications (PWA)
 - [ ] Trip history
-- [ ] Custom participant avatars/colors on map
 - [ ] Offline support
 
 ---

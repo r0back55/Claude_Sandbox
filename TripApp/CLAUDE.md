@@ -17,7 +17,7 @@ A real-time group travel tracking web app.
 
 ## Current Status
 
-Production-ready PoC. All core features working and deployed.
+Production-ready PoC. All core features working, styled, and deployed. Tested on desktop and mobile (iOS Safari + Chrome).
 
 ---
 
@@ -29,22 +29,27 @@ Production-ready PoC. All core features working and deployed.
 - [x] Tailwind CSS v4 via `@tailwindcss/vite` plugin
 - [x] Firebase project connected (Auth + Realtime Database + Hosting)
 - [x] Firebase Realtime Database security rules configured
-- [x] Deployed to Firebase Hosting
+- [x] Deployed to Firebase Hosting (`https://tripapp-53122.web.app`)
 
 ### Features
 - [x] Google login for organizers
 - [x] Anonymous auth (Firebase) for guest participants — join with nickname + trip code
 - [x] Trip creation with city search (Nominatim geocoding, no API key needed)
 - [x] Lobby with trip code display and participant list
+- [x] Copy trip code button (clipboard, shows "Copied!" feedback)
+- [x] Start Trip button disabled until at least 1 participant joins, shows count badge
 - [x] Organizer can start trip → all participants redirected to map
 - [x] Live location sharing (browser geolocation, updates every 1 minute)
 - [x] Interactive map (Leaflet + OpenStreetMap)
-- [x] Route overlay per participant (OSRM, free)
-- [x] ETA panel per participant (OSRM)
+- [x] Unique colored markers per participant with initials (8 color palette)
+- [x] Route overlay per participant in matching color (OSRM, free)
+- [x] ETA panel per participant — collapsible drawer, shows "Arrived ✓" when within 100m
+- [x] Custom destination marker (dark circle with star icon)
 - [x] Notifications: joined, arrived, stopped 10+ min, all arrived
 - [x] Organizer "End Trip" button
 - [x] Participant "Exit Trip" button (removes from Firebase, redirects to landing)
 - [x] Mobile viewport fix (`100dvh`)
+- [x] Map padding with rounded corners
 - [x] TypeScript migration with strict mode
 - [x] Full UI styling with Tailwind
 
@@ -93,7 +98,8 @@ trips/
 
 - OSRM public demo server used — should be self-hosted for production at scale
 - Nominatim public server used — has rate limits, fine for PoC
-- Bundle size warning (669KB) — needs code splitting for production
+- Bundle size warning (672KB) — needs code splitting for production
+- Geolocation only works on HTTPS (not local HTTP on mobile)
 - No error boundary components yet
 - No loading skeleton screens
 
@@ -105,9 +111,8 @@ trips/
 - [ ] **Step 5: CI/CD** — GitHub Actions auto-deploy to Firebase on push to `master`
 
 ### Backlog
-- [ ] Map click to set destination (instead of city search)
+- [ ] Map click to set destination
 - [ ] Push notifications (PWA / service worker)
-- [ ] Custom marker colors per participant
 - [ ] Trip history / past trips
 - [ ] Offline support
 - [ ] Code splitting (fix bundle size warning)
