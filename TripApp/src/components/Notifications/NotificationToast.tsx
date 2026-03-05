@@ -12,22 +12,13 @@ export default function NotificationToast({ message, onDismiss }: Props) {
   }, [onDismiss])
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '1rem',
-      right: '1rem',
-      background: '#333',
-      color: '#fff',
-      padding: '0.75rem 1.25rem',
-      borderRadius: '8px',
-      zIndex: 9999,
-    }}>
-      {message}
+    <div className="flex items-center gap-3 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-lg max-w-sm">
+      <span className="flex-1">{message}</span>
       <button
         onClick={onDismiss}
-        style={{ marginLeft: '1rem', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+        className="text-gray-400 hover:text-white transition-colors text-lg leading-none"
       >
-        x
+        ×
       </button>
     </div>
   )

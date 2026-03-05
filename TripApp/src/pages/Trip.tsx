@@ -36,15 +36,33 @@ export default function Trip() {
     setNotifications((prev) => prev.filter((n) => n.id !== id))
 
   return (
-    <div>
-      <TripMap participants={trip?.participants} destination={trip?.destination} />
+    <div className="flex flex-col h-screen">
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
+        <div>
+          <h1 className="font-bold text-gray-900">TripApp</h1>
+          <p className="text-xs text-gray-500">To: {trip?.destination?.name}</p>
+        </div>
+        {identity?.isOrganizer && (
+          <button
+            onClick={endTrip}
+            className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            End Trip
+          </button>
+        )}
+      </header>
+
+      <div className="flex-1 relative">
+        <TripMap participants={trip?.participants} destination={trip?.destination} />
+      </div>
+
       <ETAPanel participants={trip?.participants} destination={trip?.destination} />
-      {notifications.map((n) => (
-        <NotificationToast key={n.id} message={n.message} onDismiss={() => dismissNotification(n.id)} />
-      ))}
-      {identity?.isOrganizer && (
-        <button onClick={endTrip}>End Trip</button>
-      )}
+
+      <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+        {notifications.map((n) => (
+          <NotificationToast key={n.id} message={n.message} onDismiss={() => dismissNotification(n.id)} />
+        ))}
+      </div>
     </div>
   )
 }

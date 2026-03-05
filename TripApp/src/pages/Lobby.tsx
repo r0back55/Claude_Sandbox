@@ -27,13 +27,29 @@ export default function Lobby() {
   }, [trip?.status, tripId, navigate])
 
   return (
-    <div>
-      <h1>Waiting for trip to start...</h1>
-      <p>Trip code: <strong>{tripId}</strong></p>
-      <ParticipantList participants={trip?.participants} />
-      {identity?.isOrganizer && (
-        <button onClick={startTrip}>Start Trip</button>
-      )}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md flex flex-col gap-5">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Waiting for trip to start...</h1>
+          <p className="text-gray-500 mt-1 text-sm">Share this code with your group</p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center">
+          <p className="text-sm text-gray-500 mb-1">Trip Code</p>
+          <p className="text-4xl font-bold tracking-widest text-blue-600">{tripId}</p>
+        </div>
+
+        <ParticipantList participants={trip?.participants} />
+
+        {identity?.isOrganizer && (
+          <button
+            onClick={startTrip}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-colors"
+          >
+            Start Trip
+          </button>
+        )}
+      </div>
     </div>
   )
 }

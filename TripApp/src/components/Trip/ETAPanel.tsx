@@ -21,12 +21,17 @@ export default function ETAPanel({ participants, destination }: Props) {
   }, [participants, destination])
 
   return (
-    <div>
-      <h3>ETA to {destination?.name}</h3>
-      <ul>
+    <div className="bg-white border-t border-gray-200 px-4 py-4">
+      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+        ETA to {destination?.name}
+      </h3>
+      <ul className="flex flex-col gap-2">
         {Object.entries(participants ?? {}).map(([uid, p]) => (
-          <li key={uid}>
-            {p.name}: {etas[uid] ? `${etas[uid].etaMinutes} min (${etas[uid].distanceKm} km)` : 'Calculating...'}
+          <li key={uid} className="flex items-center justify-between text-sm">
+            <span className="font-medium text-gray-800">{p.name}</span>
+            <span className="text-gray-500">
+              {etas[uid] ? `${etas[uid].etaMinutes} min · ${etas[uid].distanceKm} km` : 'Calculating...'}
+            </span>
           </li>
         ))}
       </ul>
