@@ -18,7 +18,7 @@ export default function Trip() {
   const { identity } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
+  const { refresh: refreshLocation } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
 
   const onNotify = useCallback((message: string): void => {
     setNotifications((prev) => [...prev, { id: Date.now(), message }])
@@ -71,9 +71,17 @@ export default function Trip() {
         </div>
       </div>
 
-      <div className="bg-amber-50 border-t border-amber-200 px-4 py-2 flex items-center gap-2">
-        <span className="text-amber-500 text-sm">⚠</span>
-        <p className="text-xs text-amber-700">Keep this page open and screen on for live location updates.</p>
+      <div className="bg-amber-50 border-t border-amber-200 px-4 py-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-amber-500 text-sm">⚠</span>
+          <p className="text-xs text-amber-700">Keep this page open and screen on for live location updates.</p>
+        </div>
+        <button
+          onClick={refreshLocation}
+          className="shrink-0 text-xs text-amber-700 font-medium border border-amber-300 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg transition-colors"
+        >
+          Refresh
+        </button>
       </div>
 
       <ETAPanel participants={trip?.participants} destination={trip?.destination} />
