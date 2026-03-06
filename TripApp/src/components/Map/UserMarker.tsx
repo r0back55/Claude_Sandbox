@@ -1,24 +1,25 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import type { Participant } from '../../types'
 
 const ANIMATION_DURATION = 1000 // ms
+const STALE_MS = 5 * 60 * 1000 // 5 minutes
 
 interface Props {
   participant: Participant
   color: string
 }
 
-function createColoredIcon(color: string, name: string, speed?: number): L.DivIcon {
+function createColoredIcon(color: string, name: string, speed?: number, stale = false): L.DivIcon {
   const moving = speed !== undefined && speed >= 5
   const dotColor = speed === undefined ? 'transparent' : moving ? '#22c55e' : '#ef4444'
-  const showDot = speed !== undefined
+  const showDot = speed !== undefined && !stale
 
   return L.divIcon({
     className: '',
     html: `
-      <div style="position:relative; width:36px; height:36px;">
+      <div style="position:relative; width:36px; height:36px; ${stale ? 'opacity:0.45; filter:grayscale(100%)' : ''}">
         <div style="
           background-color: ${color};
           width: 36px;
@@ -62,10 +63,24 @@ function createColoredIcon(color: string, name: string, speed?: number): L.DivIc
   })
 }
 
+function formatLastSeen(updatedAt: number, now: number): string {
+  const mins = Math.floor((now - updatedAt) / 60_000)
+  if (mins < 1) return 'just now'
+  if (mins === 1) return '1 min ago'
+  return `${mins} min ago`
+}
+
 export default function UserMarker({ participant, color }: Props) {
   const markerRef = useRef<L.Marker | null>(null)
   const prevPos = useRef<[number, number]>([participant.lat, participant.lng])
   const animRef = useRef<number | null>(null)
+  const [now, setNow] = useState(Date.now())
+
+  // Tick every 30s so "last seen" label stays current
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 30_000)
+    return () => clearInterval(id)
+  }, [])
 
   useEffect(() => {
     const marker = markerRef.current
@@ -104,8 +119,11 @@ export default function UserMarker({ participant, color }: Props) {
     }
   }, [participant.lat, participant.lng])
 
-  const speedLabel =
-    participant.speed === undefined
+  const stale = now - participant.updatedAt > STALE_MS
+
+  const statusLabel = stale
+    ? `Last seen ${formatLastSeen(participant.updatedAt, now)}`
+    : participant.speed === undefined
       ? 'Speed unknown'
       : participant.speed < 5
         ? 'Stopped'
@@ -115,12 +133,12 @@ export default function UserMarker({ participant, color }: Props) {
     <Marker
       ref={markerRef}
       position={[participant.lat, participant.lng]}
-      icon={createColoredIcon(color, participant.name, participant.speed)}
+      icon={createColoredIcon(color, participant.name, participant.speed, stale)}
     >
       <Popup>
         <strong>{participant.name}</strong>
         <br />
-        <span style={{ fontSize: '12px', color: '#666' }}>{speedLabel}</span>
+        <span style={{ fontSize: '12px', color: stale ? '#ef4444' : '#666' }}>{statusLabel}</span>
       </Popup>
     </Marker>
   )

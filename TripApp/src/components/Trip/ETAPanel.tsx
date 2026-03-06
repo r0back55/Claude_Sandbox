@@ -4,6 +4,7 @@ import type { Participant, Destination, ETAResult } from '../../types'
 import { getParticipantColor } from '../../utils/colors'
 
 const ARRIVED_THRESHOLD_KM = 0.1
+const STALE_MS = 5 * 60 * 1000
 
 interface Props {
   participants?: Record<string, Participant>
@@ -87,7 +88,14 @@ export default function ETAPanel({ participants, destination }: Props) {
                   className="shrink-0 w-3 h-3 rounded-full border border-white shadow-sm"
                   style={{ backgroundColor: getParticipantColor(participants ?? {}, uid) }}
                 />
-                <span className="font-medium text-gray-800 truncate">{participant.name}</span>
+                <div className="min-w-0">
+                  <span className="font-medium text-gray-800 truncate block">{participant.name}</span>
+                  {Date.now() - participant.updatedAt > STALE_MS && (
+                    <span className="text-xs text-red-400">
+                      last seen {Math.floor((Date.now() - participant.updatedAt) / 60_000)} min ago
+                    </span>
+                  )}
+                </div>
                 {rank === 1 && !arrived && eta && (
                   <span className="text-xs bg-blue-100 text-blue-600 font-medium px-1.5 py-0.5 rounded-full shrink-0">
                     leader

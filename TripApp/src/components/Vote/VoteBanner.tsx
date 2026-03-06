@@ -5,9 +5,11 @@ interface Props {
   tripId: string
   identity: Identity
   vote: Vote | null
+  hasRestStop: boolean
+  onSetMeetingPoint: () => void
 }
 
-export default function VoteBanner({ tripId, identity, vote }: Props) {
+export default function VoteBanner({ tripId, identity, vote, hasRestStop, onSetMeetingPoint }: Props) {
   const myVote = vote?.votes?.[identity.uid]
   const yesCount = Object.values(vote?.votes ?? {}).filter((v) => v === 'yes').length
   const noCount = Object.values(vote?.votes ?? {}).filter((v) => v === 'no').length
@@ -25,17 +27,32 @@ export default function VoteBanner({ tripId, identity, vote }: Props) {
     closeVote(tripId)
   }
 
-  // No active vote — show propose button
+  // No active vote — show propose button (+ meeting point for organizer)
   if (!vote || vote.status !== 'active') {
     return (
-      <div className="bg-white border-t border-gray-200 px-4 py-2 flex items-center justify-between">
-        <span className="text-sm text-gray-500">Need a break?</span>
-        <button
-          onClick={handlePropose}
-          className="text-sm font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-lg transition-colors"
-        >
-          Rest Stop?
-        </button>
+      <div className="bg-white border-t border-gray-200 px-4 py-2 flex items-center justify-between gap-2">
+        <span className="text-sm text-gray-500 shrink-0">Need a break?</span>
+        <div className="flex items-center gap-2">
+          {identity.isOrganizer && (
+            <button
+              onClick={onSetMeetingPoint}
+              disabled={hasRestStop}
+              className={`text-xs font-medium border px-3 py-1.5 rounded-lg transition-colors ${
+                hasRestStop
+                  ? 'bg-amber-100 text-amber-600 border-amber-200 cursor-default'
+                  : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-50'
+              }`}
+            >
+              {hasRestStop ? '📍 Set' : '📍 Pin'}
+            </button>
+          )}
+          <button
+            onClick={handlePropose}
+            className="text-sm font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            Rest Stop?
+          </button>
+        </div>
       </div>
     )
   }
@@ -91,6 +108,20 @@ export default function VoteBanner({ tripId, identity, vote }: Props) {
             {yesCount} Yes · {noCount} No
           </span>
         </div>
+      )}
+
+      {identity.isOrganizer && (
+        <button
+          onClick={onSetMeetingPoint}
+          disabled={hasRestStop}
+          className={`mt-2 w-full py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+            hasRestStop
+              ? 'bg-amber-100 text-amber-600 border-amber-200 cursor-default'
+              : 'bg-white text-amber-600 border-amber-300 hover:bg-amber-50'
+          }`}
+        >
+          {hasRestStop ? '📍 Meeting point set' : '📍 Set meeting point on map'}
+        </button>
       )}
     </div>
   )

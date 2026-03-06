@@ -6,6 +6,7 @@ import { useLocation } from '../hooks/useLocation'
 import { useNotifications } from '../hooks/useNotifications'
 import { useChat } from '../hooks/useChat'
 import { useVote } from '../hooks/useVote'
+import { useRestStop } from '../hooks/useRestStop'
 import TripMap from '../components/Map/TripMap'
 import ETAPanel from '../components/Trip/ETAPanel'
 import ChatPanel from '../components/Chat/ChatPanel'
@@ -13,6 +14,7 @@ import VoteBanner from '../components/Vote/VoteBanner'
 import NotificationToast from '../components/Notifications/NotificationToast'
 import { db } from '../services/firebase'
 import { ref, set, remove } from 'firebase/database'
+import { setRestStop, clearRestStop } from '../services/restStop'
 import type { Notification } from '../types'
 
 export default function Trip() {
@@ -27,9 +29,12 @@ export default function Trip() {
     parseInt(localStorage.getItem(seenKey) ?? '0', 10)
   )
 
+  const [settingRestStop, setSettingRestStop] = useState(false)
+
   const { refresh: refreshLocation, locating } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
   const messages = useChat(tripId ?? null)
   const vote = useVote(tripId ?? null)
+  const restStop = useRestStop(tripId ?? null)
 
   const onNotify = useCallback((message: string): void => {
     setNotifications((prev) => [...prev, { id: Date.now(), message }])
@@ -95,7 +100,22 @@ export default function Trip() {
 
       <div className="flex-1 p-3 bg-gray-100 relative">
         <div className="h-full rounded-xl overflow-hidden shadow-sm">
-          <TripMap participants={trip?.participants} destination={trip?.destination} />
+          <TripMap
+            participants={trip?.participants}
+            destination={trip?.destination}
+            restStop={restStop}
+            settingRestStop={settingRestStop}
+            isOrganizer={identity?.isOrganizer}
+            onRestStopSet={async (lat, lng) => {
+              if (!tripId) return
+              await setRestStop(tripId, lat, lng)
+              setSettingRestStop(false)
+            }}
+            onRestStopClear={async () => {
+              if (!tripId) return
+              await clearRestStop(tripId)
+            }}
+          />
         </div>
         {locating && (
           <div className="absolute inset-3 rounded-xl bg-white/70 flex flex-col items-center justify-center gap-2 z-20">
@@ -119,7 +139,13 @@ export default function Trip() {
       </div>
 
       {identity && tripId && (
-        <VoteBanner tripId={tripId} identity={identity} vote={vote} />
+        <VoteBanner
+          tripId={tripId}
+          identity={identity}
+          vote={vote}
+          hasRestStop={!!restStop}
+          onSetMeetingPoint={() => setSettingRestStop(true)}
+        />
       )}
 
       {chatOpen && identity && tripId && (

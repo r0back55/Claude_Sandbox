@@ -54,3 +54,8 @@ export interface Message {
   text: string
   sentAt: number
 }
+
+export interface RestStop {
+  lat: number
+  lng: number
+}
