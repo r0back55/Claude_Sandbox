@@ -16,6 +16,19 @@ export default function Lobby() {
 
   useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
 
+  // Register participant immediately on join so they appear in the list
+  // before geolocation fires
+  useEffect(() => {
+    if (!tripId || !identity) return
+    const participantRef = ref(db, `trips/${tripId}/participants/${identity.uid}`)
+    set(participantRef, {
+      name: identity.name,
+      lat: 0,
+      lng: 0,
+      updatedAt: Date.now(),
+    })
+  }, [tripId, identity])
+
   const startTrip = async (): Promise<void> => {
     if (!tripId) return
     await set(ref(db, `trips/${tripId}/status`), 'active')

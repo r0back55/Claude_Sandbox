@@ -20,6 +20,7 @@ export default function Trip() {
   const { identity } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [chatOpen, setChatOpen] = useState(false)
+  const [seenCount, setSeenCount] = useState(0)
 
   const { refresh: refreshLocation, locating } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
   const messages = useChat(tripId ?? null)
@@ -54,13 +55,16 @@ export default function Trip() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setChatOpen((v) => !v)}
+            onClick={() => {
+              setChatOpen((v) => !v)
+              setSeenCount(messages.length)
+            }}
             className="relative bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg transition-colors"
           >
             💬
-            {messages.length > 0 && (
+            {messages.length > seenCount && (
               <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
-                {messages.length > 9 ? '9+' : messages.length}
+                {messages.length - seenCount > 9 ? '9+' : messages.length - seenCount}
               </span>
             )}
           </button>
