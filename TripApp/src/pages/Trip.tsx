@@ -20,7 +20,10 @@ export default function Trip() {
   const { identity } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [chatOpen, setChatOpen] = useState(false)
-  const [seenCount, setSeenCount] = useState(0)
+  const seenKey = `chat_seen_${tripId}`
+  const [seenCount, setSeenCount] = useState<number>(() =>
+    parseInt(localStorage.getItem(seenKey) ?? '0', 10)
+  )
 
   const { refresh: refreshLocation, locating } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
   const messages = useChat(tripId ?? null)
@@ -58,6 +61,7 @@ export default function Trip() {
             onClick={() => {
               setChatOpen((v) => !v)
               setSeenCount(messages.length)
+              localStorage.setItem(seenKey, String(messages.length))
             }}
             className="relative bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg transition-colors"
           >

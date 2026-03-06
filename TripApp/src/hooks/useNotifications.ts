@@ -24,9 +24,18 @@ export function useNotifications(
   const stoppedTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
   const arrivedUids = useRef<Set<string>>(new Set())
   const allArrivedNotified = useRef(false)
+  const initialized = useRef(false)
 
   useEffect(() => {
     if (!participants) return
+
+    // On first load, silently initialize with existing participants
+    // so we don't re-notify about people who were already in the trip
+    if (!initialized.current) {
+      initialized.current = true
+      prevParticipants.current = participants
+      return
+    }
 
     Object.entries(participants).forEach(([uid, data]) => {
       const prev = prevParticipants.current[uid]
