@@ -17,7 +17,7 @@ A real-time group travel tracking web app.
 
 ## Current Status
 
-Production-ready PoC. All core features working, styled, and deployed. Tested on desktop and mobile (iOS Safari + Chrome).
+Production-ready. All planned features implemented, styled, tested on desktop and mobile (iOS Safari + Chrome). UI improvements list fully completed.
 
 ---
 
@@ -35,17 +35,25 @@ Production-ready PoC. All core features working, styled, and deployed. Tested on
 - [x] Google login for organizers
 - [x] Anonymous auth (Firebase) for guest participants — join with nickname + trip code
 - [x] Trip creation with city search (Nominatim geocoding, no API key needed)
+- [x] Map click to set destination (reverse geocoding via Nominatim)
 - [x] Lobby with trip code display and participant list
 - [x] Copy trip code button (clipboard, shows "Copied!" feedback)
+- [x] Copy invite link button — direct URL, friend only needs to enter name
+- [x] `/join/:tripId` page for direct invite links
 - [x] Start Trip button disabled until at least 1 participant joins, shows count badge
 - [x] Organizer can start trip → all participants redirected to map
 - [x] Live location sharing (browser geolocation, updates every 1 minute)
+- [x] Manual "Refresh" button to force immediate location update
+- [x] Loading spinner overlay while GPS fix is being acquired
 - [x] Interactive map (Leaflet + OpenStreetMap)
 - [x] Unique colored markers per participant with initials (8 color palette)
+- [x] Smooth marker animation (ease-in-out, 1 second, via requestAnimationFrame)
 - [x] Route overlay per participant in matching color (OSRM, free)
 - [x] ETA panel per participant — collapsible drawer, shows "Arrived ✓" when within 100m
 - [x] Custom destination marker (dark circle with star icon)
+- [x] Empty state on map when no locations shared yet
 - [x] Notifications: joined, arrived, stopped 10+ min, all arrived
+- [x] Background location warning banner with Refresh button
 - [x] Organizer "End Trip" button
 - [x] Participant "Exit Trip" button (removes from Firebase, redirects to landing)
 - [x] Mobile viewport fix (`100dvh`)
@@ -65,6 +73,7 @@ Production-ready PoC. All core features working, styled, and deployed. Tested on
 | Geocoding | Nominatim | Free, no API key |
 | Realtime | Firebase Realtime DB | Simple, free tier, built-in sync |
 | Styling | Tailwind CSS v4 | Fast, scalable |
+| Marker animation | requestAnimationFrame + setLatLng | No extra deps, smooth performance |
 
 ---
 
@@ -96,10 +105,11 @@ trips/
 
 ## Known Issues / Technical Debt
 
-- OSRM public demo server used — should be self-hosted for production at scale
-- Nominatim public server used — has rate limits, fine for PoC
-- Bundle size warning (672KB) — needs code splitting for production
+- OSRM public demo server — should be self-hosted for production at scale
+- Nominatim public server — has rate limits, fine for PoC
+- Bundle size warning (~672KB) — needs code splitting
 - Geolocation only works on HTTPS (not local HTTP on mobile)
+- Background location not supported (browser limitation) — warned in UI
 - No error boundary components yet
 - No loading skeleton screens
 
@@ -108,16 +118,14 @@ trips/
 ## Roadmap (Next Steps)
 
 ### Next up
-- [ ] **Step 5: CI/CD** — GitHub Actions auto-deploy to Firebase on push to `master`
+- [ ] **CI/CD** — GitHub Actions auto-deploy to Firebase on push to `master`
 
 ### Backlog
-- [ ] Map click to set destination
 - [ ] Push notifications (PWA / service worker)
 - [ ] Trip history / past trips
 - [ ] Offline support
 - [ ] Code splitting (fix bundle size warning)
 - [ ] Error boundaries
-- [ ] Loading skeleton screens
 - [ ] Self-hosted OSRM
 
 ---

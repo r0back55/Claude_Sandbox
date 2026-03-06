@@ -1,6 +1,6 @@
 # TripApp
 
-A real-time group travel tracking web app. Set a shared destination, share a trip code with your group, and see everyone's live location on a map — with ETA for each participant.
+A real-time group travel tracking web app. Set a shared destination, share a trip code or direct link with your group, and see everyone's live location on a map — with ETA for each participant.
 
 **Live demo:** https://tripapp-53122.web.app
 
@@ -9,15 +9,22 @@ A real-time group travel tracking web app. Set a shared destination, share a tri
 ## Features
 
 - **Google login** for trip organizers
-- **Nickname-based joining** — participants join with a code, no account needed
+- **Nickname-based joining** — participants join with a code or direct link, no account needed
+- **Shareable invite link** — organizer can copy a direct link, friends only need to enter their name
 - **Live location sharing** — updates every minute via browser geolocation
+- **Manual refresh** — button to force an immediate location update
 - **Interactive map** — each participant shown as a unique colored marker with initials
+- **Smooth marker animation** — markers glide to new positions instead of jumping
 - **Route overlay** — remaining path to destination drawn per participant in matching color
-- **ETA panel** — collapsible, shows estimated time and distance per participant, with arrived indicator
+- **ETA panel** — collapsible, shows estimated time and distance per participant
+- **Arrived indicator** — shows green "Arrived ✓" when participant is within 100m of destination
 - **Smart notifications** — alerts when someone arrives, stops moving, or joins
 - **Organizer controls** — start trip, end trip for all participants
 - **Participant controls** — exit trip independently
 - **Copy trip code** — one-tap copy button in the lobby
+- **Participant count badge** — Start Trip button shows how many people are ready
+- **Loading spinner** — shown while GPS fix is being acquired on first load
+- **Empty map state** — friendly message when no locations have been shared yet
 - **Mobile ready** — responsive design, works on iOS and Android browsers (HTTPS required for geolocation)
 
 ---
@@ -43,8 +50,9 @@ A real-time group travel tracking web app. Set a shared destination, share a tri
 Organizer                          Participants
 ─────────                          ────────────
 Sign in with Google                Enter nickname + trip code
-Set destination (city search)      Join lobby
-Share trip code                    Wait for organizer
+Set destination (search or         OR open direct invite link
+click on map)                      and enter name only
+Share trip code / link             Join lobby
 Click "Start Trip"          →      Everyone redirected to map
 See live map + ETAs                See live map + ETAs
 Click "End Trip"            →      Trip ends for everyone
@@ -130,6 +138,8 @@ npm run build
 firebase deploy --only hosting
 ```
 
+> Note: CDN propagation can take 1-2 minutes after deploy.
+
 ---
 
 ## Project Structure
@@ -141,44 +151,53 @@ src/
 │   │   ├── GoogleLogin.tsx       # Google sign-in button
 │   │   └── NicknameForm.tsx      # Guest join form
 │   ├── Map/
-│   │   ├── TripMap.tsx           # Main Leaflet map
-│   │   ├── UserMarker.tsx        # Participant pin
+│   │   ├── TripMap.tsx           # Main Leaflet map + empty state
+│   │   ├── UserMarker.tsx        # Animated participant marker
 │   │   └── RouteLayer.tsx        # Route polyline to destination
 │   ├── Notifications/
 │   │   └── NotificationToast.tsx # Auto-dismissing toast
 │   └── Trip/
 │       ├── CreateTrip.tsx        # Create trip form
 │       ├── DestinationSearch.tsx # City search via Nominatim
-│       ├── ETAPanel.tsx          # ETA list per participant
+│       ├── DestinationMap.tsx    # Clickable map for destination
+│       ├── ETAPanel.tsx          # Collapsible ETA list per participant
 │       └── ParticipantList.tsx   # Lobby participant list
 ├── context/
 │   ├── AuthContext.tsx           # Firebase auth state
 │   └── TripContext.tsx           # Active trip state
 ├── hooks/
-│   ├── useLocation.ts            # Geolocation + 1min publish
+│   ├── useLocation.ts            # Geolocation + 1min publish + manual refresh
 │   ├── useNotifications.ts       # Arrival/stop/join alerts
 │   └── useTrip.ts                # Firebase trip subscription
 ├── pages/
 │   ├── Landing.tsx               # Login / join page
 │   ├── Dashboard.tsx             # Organizer: create trip
 │   ├── Lobby.tsx                 # Waiting room
-│   └── Trip.tsx                  # Active trip map view
+│   ├── Trip.tsx                  # Active trip map view
+│   └── Join.tsx                  # Direct invite link landing
 ├── services/
 │   ├── firebase.ts               # Firebase init
 │   ├── location.ts               # Read/write locations to Firebase
-│   └── routing.ts                # OSRM ETA calls
+│   └── routing.ts                # OSRM ETA + Nominatim reverse geocode
 └── types.ts                      # Shared TypeScript interfaces
 ```
+
+---
+
+## Known Limitations
+
+- **Background location:** Mobile browsers suspend JavaScript when the app is in the background. Use the **Refresh** button when returning to the app, or keep the screen on.
+- Location requires **HTTPS** — works on Firebase Hosting, not on local HTTP for mobile.
 
 ---
 
 ## Roadmap
 
 - [ ] CI/CD via GitHub Actions
-- [ ] Map click to set destination
 - [ ] Push notifications (PWA)
 - [ ] Trip history
 - [ ] Offline support
+- [ ] Code splitting (reduce bundle size)
 
 ---
 
