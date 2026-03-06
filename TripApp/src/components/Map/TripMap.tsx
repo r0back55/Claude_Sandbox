@@ -53,28 +53,39 @@ export default function TripMap({ participants, destination }: Props) {
       : DEFAULT_CENTER
 
   return (
-    <MapContainer center={center} zoom={10} style={{ height: '100%', width: '100%' }}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {participantList.map(([uid, p], index) => {
-        const color = PARTICIPANT_COLORS[index % PARTICIPANT_COLORS.length]
-        return (
-          <UserMarker key={uid} participant={p} color={color} />
-        )
-      })}
-      {destination && (
-        <>
-          <Marker position={[destination.lat, destination.lng]} icon={destinationIcon}>
-            <Popup><strong>Destination:</strong> {destination.name}</Popup>
-          </Marker>
-          {participantList.map(([uid, p], index) => {
-            const color = PARTICIPANT_COLORS[index % PARTICIPANT_COLORS.length]
-            return <RouteLayer key={uid} from={p} to={destination} color={color} />
-          })}
-        </>
+    <div className="relative h-full w-full">
+      <MapContainer center={center} zoom={10} style={{ height: '100%', width: '100%' }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {participantList.map(([uid, p], index) => {
+          const color = PARTICIPANT_COLORS[index % PARTICIPANT_COLORS.length]
+          return (
+            <UserMarker key={uid} participant={p} color={color} />
+          )
+        })}
+        {destination && (
+          <>
+            <Marker position={[destination.lat, destination.lng]} icon={destinationIcon}>
+              <Popup><strong>Destination:</strong> {destination.name}</Popup>
+            </Marker>
+            {participantList.map(([uid, p], index) => {
+              const color = PARTICIPANT_COLORS[index % PARTICIPANT_COLORS.length]
+              return <RouteLayer key={uid} from={p} to={destination} color={color} />
+            })}
+          </>
+        )}
+      </MapContainer>
+
+      {participantList.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <div className="bg-white/90 rounded-xl px-5 py-3 shadow text-center">
+            <p className="text-sm font-medium text-gray-700">Waiting for locations...</p>
+            <p className="text-xs text-gray-400 mt-0.5">Participants will appear once they share their position</p>
+          </div>
+        </div>
       )}
-    </MapContainer>
+    </div>
   )
 }
