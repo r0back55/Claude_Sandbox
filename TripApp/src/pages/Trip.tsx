@@ -71,6 +71,11 @@ export default function Trip() {
         </div>
       </div>
 
+      <div className="bg-amber-50 border-t border-amber-200 px-4 py-2 flex items-center gap-2">
+        <span className="text-amber-500 text-sm">⚠</span>
+        <p className="text-xs text-amber-700">Keep this page open and screen on for live location updates.</p>
+      </div>
+
       <ETAPanel participants={trip?.participants} destination={trip?.destination} />
 
       <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
