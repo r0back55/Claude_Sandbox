@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { writeLocation } from '../services/location'
 
 const INTERVAL_MS = 60 * 1000 // 1 minute
@@ -7,19 +7,25 @@ export function useLocation(
   tripId: string | null,
   uid: string | null,
   name: string
-): { refresh: () => void } {
+): { refresh: () => void; locating: boolean } {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [locating, setLocating] = useState(true)
 
   const publish = useCallback((): void => {
     if (!tripId || !uid) return
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) =>
+      ({ coords }) => {
         writeLocation(tripId, uid, {
           lat: coords.latitude,
           lng: coords.longitude,
           name,
-        }),
-      (err) => console.warn('Geolocation error:', err)
+        })
+        setLocating(false)
+      },
+      (err) => {
+        console.warn('Geolocation error:', err)
+        setLocating(false)
+      }
     )
   }, [tripId, uid, name])
 
@@ -32,5 +38,5 @@ export function useLocation(
     }
   }, [tripId, uid, name, publish])
 
-  return { refresh: publish }
+  return { refresh: publish, locating }
 }

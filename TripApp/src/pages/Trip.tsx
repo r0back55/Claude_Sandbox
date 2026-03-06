@@ -18,7 +18,7 @@ export default function Trip() {
   const { identity } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  const { refresh: refreshLocation } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
+  const { refresh: refreshLocation, locating } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
 
   const onNotify = useCallback((message: string): void => {
     setNotifications((prev) => [...prev, { id: Date.now(), message }])
@@ -65,10 +65,16 @@ export default function Trip() {
         )}
       </header>
 
-      <div className="flex-1 p-3 bg-gray-100">
+      <div className="flex-1 p-3 bg-gray-100 relative">
         <div className="h-full rounded-xl overflow-hidden shadow-sm">
           <TripMap participants={trip?.participants} destination={trip?.destination} />
         </div>
+        {locating && (
+          <div className="absolute inset-3 rounded-xl bg-white/70 flex flex-col items-center justify-center gap-2 z-20">
+            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-gray-600 font-medium">Getting your location...</p>
+          </div>
+        )}
       </div>
 
       <div className="bg-amber-50 border-t border-amber-200 px-4 py-2 flex items-center justify-between gap-2">
