@@ -3,6 +3,7 @@ import Landing from './pages/Landing'
 import Dashboard from './pages/Dashboard'
 import Lobby from './pages/Lobby'
 import Trip from './pages/Trip'
+import Join from './pages/Join'
 import { useAuth } from './context/AuthContext'
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/dashboard" element={identity?.isOrganizer ? <Dashboard /> : <Navigate to="/" />} />
       <Route path="/lobby/:tripId" element={<Lobby />} />
       <Route path="/trip/:tripId" element={<Trip />} />
+      <Route path="/join/:tripId" element={<Join />} />
     </Routes>
   )
 }

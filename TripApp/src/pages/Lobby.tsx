@@ -12,7 +12,7 @@ export default function Lobby() {
   const navigate = useNavigate()
   const trip = useTrip(tripId ?? null)
   const { identity } = useAuth()
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<'code' | 'link' | null>(null)
 
   useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
 
@@ -24,8 +24,15 @@ export default function Lobby() {
   const copyCode = (): void => {
     if (!tripId) return
     navigator.clipboard.writeText(tripId)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setCopied('code')
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const copyLink = (): void => {
+    if (!tripId) return
+    navigator.clipboard.writeText(`${window.location.origin}/join/${tripId}`)
+    setCopied('link')
+    setTimeout(() => setCopied(null), 2000)
   }
 
   useEffect(() => {
@@ -47,12 +54,20 @@ export default function Lobby() {
         <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center">
           <p className="text-sm text-gray-500 mb-1">Trip Code</p>
           <p className="text-4xl font-bold tracking-widest text-blue-600 mb-4">{tripId}</p>
-          <button
-            onClick={copyCode}
-            className="w-full border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium py-2 rounded-lg transition-colors"
-          >
-            {copied ? 'Copied!' : 'Copy Code'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={copyCode}
+              className="flex-1 border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium py-2 rounded-lg transition-colors"
+            >
+              {copied === 'code' ? 'Copied!' : 'Copy Code'}
+            </button>
+            <button
+              onClick={copyLink}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors"
+            >
+              {copied === 'link' ? 'Copied!' : 'Copy Link'}
+            </button>
+          </div>
         </div>
 
         <ParticipantList participants={trip?.participants} />
