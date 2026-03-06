@@ -48,12 +48,17 @@ Production-ready. All planned features implemented, styled, tested on desktop an
 - [x] Interactive map (Leaflet + OpenStreetMap)
 - [x] Unique colored markers per participant with initials (8 color palette)
 - [x] Smooth marker animation (ease-in-out, 1 second, via requestAnimationFrame)
+- [x] Map auto-fit — fitBounds on all participants + destination on every location update
+- [x] Speed indicator — Haversine calculation between consecutive GPS fixes; green dot (≥5 km/h) / red dot (stopped) on marker; speed shown in popup
 - [x] Route overlay per participant in matching color (OSRM, free)
 - [x] ETA panel per participant — collapsible drawer, shows "Arrived ✓" when within 100m
+- [x] ETA panel color dots — match marker colors via shared `utils/colors.ts`
 - [x] Custom destination marker (dark circle with star icon)
 - [x] Empty state on map when no locations shared yet
 - [x] Notifications: joined, arrived, stopped 10+ min, all arrived
 - [x] Background location warning banner with Refresh button
+- [x] Group chat — real-time Firebase messaging, iMessage-style bubbles, unread badge persisted in localStorage
+- [x] Rest stop voting — propose/yes/no/close, live progress bar, anyone can propose
 - [x] Organizer "End Trip" button
 - [x] Participant "Exit Trip" button (removes from Firebase, redirects to landing)
 - [x] Mobile viewport fix (`100dvh`)
@@ -99,6 +104,20 @@ trips/
         lng: number
         name: string
         updatedAt: number
+        speed?: number         (km/h, calculated between consecutive GPS fixes)
+    messages/
+      {pushId}/
+        uid: string
+        name: string
+        text: string
+        sentAt: number
+    vote/
+      status: 'active' | 'closed'
+      proposedBy: string
+      proposedByUid: string
+      createdAt: number
+      votes/
+        {uid}: 'yes' | 'no'
 ```
 
 ---
@@ -121,6 +140,7 @@ trips/
 - [ ] **CI/CD** — GitHub Actions auto-deploy to Firebase on push to `master`
 
 ### Backlog
+- [ ] Trip summary screen (show who arrived, total duration, etc.)
 - [ ] Push notifications (PWA / service worker)
 - [ ] Trip history / past trips
 - [ ] Offline support

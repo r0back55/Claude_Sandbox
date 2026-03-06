@@ -1,22 +1,13 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { useEffect } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import UserMarker from './UserMarker'
 import RouteLayer from './RouteLayer'
 import type { Participant, Destination } from '../../types'
+import { PARTICIPANT_COLORS } from '../../utils/colors'
 import 'leaflet/dist/leaflet.css'
 
 const DEFAULT_CENTER: [number, number] = [52.237049, 21.017532] // Warsaw fallback
-
-const PARTICIPANT_COLORS = [
-  '#3B82F6', // blue
-  '#EF4444', // red
-  '#10B981', // green
-  '#F59E0B', // amber
-  '#8B5CF6', // purple
-  '#EC4899', // pink
-  '#06B6D4', // cyan
-  '#F97316', // orange
-]
 
 const destinationIcon = L.divIcon({
   className: '',
@@ -40,6 +31,31 @@ const destinationIcon = L.divIcon({
   popupAnchor: [0, -20],
 })
 
+interface AutoFitProps {
+  participants: [string, Participant][]
+  destination?: Destination
+}
+
+function MapAutoFit({ participants, destination }: AutoFitProps) {
+  const map = useMap()
+
+  useEffect(() => {
+    const points: [number, number][] = []
+
+    for (const [, p] of participants) {
+      if (p.lat !== 0 || p.lng !== 0) points.push([p.lat, p.lng])
+    }
+    if (destination) points.push([destination.lat, destination.lng])
+
+    if (points.length === 0) return
+
+    const bounds = L.latLngBounds(points)
+    map.fitBounds(bounds, { padding: [48, 48], maxZoom: 15 })
+  }, [participants, destination, map])
+
+  return null
+}
+
 interface Props {
   participants?: Record<string, Participant>
   destination?: Destination
@@ -59,6 +75,7 @@ export default function TripMap({ participants, destination }: Props) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapAutoFit participants={participantList} destination={destination} />
         {participantList.map(([uid, p], index) => {
           const color = PARTICIPANT_COLORS[index % PARTICIPANT_COLORS.length]
           return (

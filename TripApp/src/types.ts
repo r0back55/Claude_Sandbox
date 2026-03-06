@@ -5,6 +5,7 @@ export interface Participant {
   lng: number
   updatedAt: number
   arrived?: boolean
+  speed?: number
 }
 
 export interface Destination {

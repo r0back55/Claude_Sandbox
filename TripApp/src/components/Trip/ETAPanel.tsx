@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getETA } from '../../services/routing'
 import type { Participant, Destination, ETAResult } from '../../types'
+import { getParticipantColor } from '../../utils/colors'
 
 const ARRIVED_THRESHOLD_KM = 0.1
 
@@ -82,7 +83,10 @@ export default function ETAPanel({ participants, destination }: Props) {
           {ranked.map(({ uid, participant, eta, arrived, rank, gapMinutes, leaderName }) => (
             <li key={uid} className="flex items-center justify-between py-2 text-sm gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-xs text-gray-400 w-4 shrink-0">{rank}.</span>
+                <span
+                  className="shrink-0 w-3 h-3 rounded-full border border-white shadow-sm"
+                  style={{ backgroundColor: getParticipantColor(participants ?? {}, uid) }}
+                />
                 <span className="font-medium text-gray-800 truncate">{participant.name}</span>
                 {rank === 1 && !arrived && eta && (
                   <span className="text-xs bg-blue-100 text-blue-600 font-medium px-1.5 py-0.5 rounded-full shrink-0">

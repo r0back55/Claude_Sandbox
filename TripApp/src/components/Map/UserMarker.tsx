@@ -10,33 +10,50 @@ interface Props {
   color: string
 }
 
-function createColoredIcon(color: string, name: string): L.DivIcon {
+function createColoredIcon(color: string, name: string, speed?: number): L.DivIcon {
+  const moving = speed !== undefined && speed >= 5
+  const dotColor = speed === undefined ? 'transparent' : moving ? '#22c55e' : '#ef4444'
+  const showDot = speed !== undefined
+
   return L.divIcon({
     className: '',
     html: `
-      <div style="
-        background-color: ${color};
-        width: 36px;
-        height: 36px;
-        border-radius: 50% 50% 50% 0;
-        transform: rotate(-45deg);
-        border: 3px solid white;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-      ">
+      <div style="position:relative; width:36px; height:36px;">
         <div style="
-          transform: rotate(45deg);
-          color: white;
-          font-size: 11px;
-          font-weight: 700;
-          text-align: center;
-          line-height: 30px;
-          font-family: sans-serif;
-          letter-spacing: -0.5px;
-          overflow: hidden;
-          white-space: nowrap;
+          background-color: ${color};
+          width: 36px;
+          height: 36px;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          border: 3px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.35);
         ">
-          ${name.substring(0, 2).toUpperCase()}
+          <div style="
+            transform: rotate(45deg);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 30px;
+            font-family: sans-serif;
+            letter-spacing: -0.5px;
+            overflow: hidden;
+            white-space: nowrap;
+          ">
+            ${name.substring(0, 2).toUpperCase()}
+          </div>
         </div>
+        ${showDot ? `<div style="
+          position: absolute;
+          top: -3px;
+          right: -3px;
+          width: 11px;
+          height: 11px;
+          border-radius: 50%;
+          background: ${dotColor};
+          border: 2px solid white;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        "></div>` : ''}
       </div>
     `,
     iconSize: [36, 36],
@@ -87,14 +104,23 @@ export default function UserMarker({ participant, color }: Props) {
     }
   }, [participant.lat, participant.lng])
 
+  const speedLabel =
+    participant.speed === undefined
+      ? 'Speed unknown'
+      : participant.speed < 5
+        ? 'Stopped'
+        : `${participant.speed} km/h`
+
   return (
     <Marker
       ref={markerRef}
       position={[participant.lat, participant.lng]}
-      icon={createColoredIcon(color, participant.name)}
+      icon={createColoredIcon(color, participant.name, participant.speed)}
     >
       <Popup>
         <strong>{participant.name}</strong>
+        <br />
+        <span style={{ fontSize: '12px', color: '#666' }}>{speedLabel}</span>
       </Popup>
     </Marker>
   )

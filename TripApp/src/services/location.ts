@@ -5,7 +5,7 @@ import type { Participant } from '../types'
 export function writeLocation(
   tripId: string,
   uid: string,
-  data: Pick<Participant, 'lat' | 'lng' | 'name'>
+  data: Pick<Participant, 'lat' | 'lng' | 'name' | 'speed'>
 ): Promise<void> {
   const locationRef = ref(db, `trips/${tripId}/participants/${uid}`)
   return set(locationRef, { ...data, updatedAt: Date.now() })

@@ -15,9 +15,13 @@ A real-time group travel tracking web app. Set a shared destination, share a tri
 - **Manual refresh** — button to force an immediate location update
 - **Interactive map** — each participant shown as a unique colored marker with initials
 - **Smooth marker animation** — markers glide to new positions instead of jumping
+- **Map auto-fit** — map automatically zooms and pans to keep all participants in view
+- **Speed indicator** — colored dot on each marker (green = moving, red = stopped); speed shown in popup
 - **Route overlay** — remaining path to destination drawn per participant in matching color
-- **ETA panel** — collapsible, shows estimated time and distance per participant
+- **ETA panel** — collapsible, shows estimated time and distance per participant with matching color dots
 - **Arrived indicator** — shows green "Arrived ✓" when participant is within 100m of destination
+- **Group chat** — real-time in-trip messaging with unread badge counter
+- **Rest stop voting** — any participant can propose a rest stop; live Yes/No vote with progress bar
 - **Smart notifications** — alerts when someone arrives, stops moving, or joins
 - **Organizer controls** — start trip, end trip for all participants
 - **Participant controls** — exit trip independently
@@ -122,6 +126,14 @@ Set the following rules in your Firebase Console under **Realtime Database → R
           "$uid": {
             ".write": "auth != null && auth.uid === $uid"
           }
+        },
+        "messages": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "vote": {
+          ".read": "auth != null",
+          ".write": "auth != null"
         }
       }
     }
@@ -166,9 +178,11 @@ src/
 │   ├── AuthContext.tsx           # Firebase auth state
 │   └── TripContext.tsx           # Active trip state
 ├── hooks/
-│   ├── useLocation.ts            # Geolocation + 1min publish + manual refresh
+│   ├── useLocation.ts            # Geolocation + speed calc + 1min publish + manual refresh
 │   ├── useNotifications.ts       # Arrival/stop/join alerts
-│   └── useTrip.ts                # Firebase trip subscription
+│   ├── useTrip.ts                # Firebase trip subscription
+│   ├── useChat.ts                # Real-time chat messages subscription
+│   └── useVote.ts                # Real-time rest stop vote subscription
 ├── pages/
 │   ├── Landing.tsx               # Login / join page
 │   ├── Dashboard.tsx             # Organizer: create trip
@@ -178,7 +192,11 @@ src/
 ├── services/
 │   ├── firebase.ts               # Firebase init
 │   ├── location.ts               # Read/write locations to Firebase
-│   └── routing.ts                # OSRM ETA + Nominatim reverse geocode
+│   ├── routing.ts                # OSRM ETA + Nominatim reverse geocode
+│   ├── chat.ts                   # Send/subscribe to chat messages
+│   └── vote.ts                   # Propose/cast/close rest stop votes
+├── utils/
+│   └── colors.ts                 # Shared participant color palette
 └── types.ts                      # Shared TypeScript interfaces
 ```
 
