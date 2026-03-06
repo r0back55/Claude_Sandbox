@@ -37,3 +37,11 @@ export interface Notification {
   id: number
   message: string
 }
+
+export interface Message {
+  id: string
+  uid: string
+  name: string
+  text: string
+  sentAt: number
+}

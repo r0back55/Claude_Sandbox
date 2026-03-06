@@ -4,8 +4,10 @@ import { useTrip } from '../hooks/useTrip'
 import { useAuth } from '../context/AuthContext'
 import { useLocation } from '../hooks/useLocation'
 import { useNotifications } from '../hooks/useNotifications'
+import { useChat } from '../hooks/useChat'
 import TripMap from '../components/Map/TripMap'
 import ETAPanel from '../components/Trip/ETAPanel'
+import ChatPanel from '../components/Chat/ChatPanel'
 import NotificationToast from '../components/Notifications/NotificationToast'
 import { db } from '../services/firebase'
 import { ref, set, remove } from 'firebase/database'
@@ -17,8 +19,10 @@ export default function Trip() {
   const trip = useTrip(tripId ?? null)
   const { identity } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const [chatOpen, setChatOpen] = useState(false)
 
   const { refresh: refreshLocation, locating } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
+  const messages = useChat(tripId ?? null)
 
   const onNotify = useCallback((message: string): void => {
     setNotifications((prev) => [...prev, { id: Date.now(), message }])
@@ -48,21 +52,34 @@ export default function Trip() {
           <h1 className="font-bold text-gray-900">TripApp</h1>
           <p className="text-xs text-gray-500">To: {trip?.destination?.name}</p>
         </div>
-        {identity?.isOrganizer ? (
+        <div className="flex items-center gap-2">
           <button
-            onClick={endTrip}
-            className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            onClick={() => setChatOpen((v) => !v)}
+            className="relative bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg transition-colors"
           >
-            End Trip
+            💬
+            {messages.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                {messages.length > 9 ? '9+' : messages.length}
+              </span>
+            )}
           </button>
-        ) : (
-          <button
-            onClick={exitTrip}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
-            Exit Trip
-          </button>
-        )}
+          {identity?.isOrganizer ? (
+            <button
+              onClick={endTrip}
+              className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              End Trip
+            </button>
+          ) : (
+            <button
+              onClick={exitTrip}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              Exit Trip
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="flex-1 p-3 bg-gray-100 relative">
@@ -90,7 +107,16 @@ export default function Trip() {
         </button>
       </div>
 
-      <ETAPanel participants={trip?.participants} destination={trip?.destination} />
+      {chatOpen && identity && tripId && (
+        <ChatPanel
+          tripId={tripId}
+          identity={identity}
+          messages={messages}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
+
+      {!chatOpen && <ETAPanel participants={trip?.participants} destination={trip?.destination} />}
 
       <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
         {notifications.map((n) => (
