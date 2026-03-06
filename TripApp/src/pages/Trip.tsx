@@ -5,9 +5,11 @@ import { useAuth } from '../context/AuthContext'
 import { useLocation } from '../hooks/useLocation'
 import { useNotifications } from '../hooks/useNotifications'
 import { useChat } from '../hooks/useChat'
+import { useVote } from '../hooks/useVote'
 import TripMap from '../components/Map/TripMap'
 import ETAPanel from '../components/Trip/ETAPanel'
 import ChatPanel from '../components/Chat/ChatPanel'
+import VoteBanner from '../components/Vote/VoteBanner'
 import NotificationToast from '../components/Notifications/NotificationToast'
 import { db } from '../services/firebase'
 import { ref, set, remove } from 'firebase/database'
@@ -27,6 +29,7 @@ export default function Trip() {
 
   const { refresh: refreshLocation, locating } = useLocation(tripId ?? null, identity?.uid ?? null, identity?.name ?? '')
   const messages = useChat(tripId ?? null)
+  const vote = useVote(tripId ?? null)
 
   const onNotify = useCallback((message: string): void => {
     setNotifications((prev) => [...prev, { id: Date.now(), message }])
@@ -114,6 +117,10 @@ export default function Trip() {
           Refresh
         </button>
       </div>
+
+      {identity && tripId && (
+        <VoteBanner tripId={tripId} identity={identity} vote={vote} />
+      )}
 
       {chatOpen && identity && tripId && (
         <ChatPanel

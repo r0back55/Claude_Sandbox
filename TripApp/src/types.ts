@@ -38,6 +38,14 @@ export interface Notification {
   message: string
 }
 
+export interface Vote {
+  status: 'active' | 'closed'
+  proposedBy: string
+  proposedByUid: string
+  createdAt: number
+  votes: Record<string, 'yes' | 'no'>
+}
+
 export interface Message {
   id: string
   uid: string
